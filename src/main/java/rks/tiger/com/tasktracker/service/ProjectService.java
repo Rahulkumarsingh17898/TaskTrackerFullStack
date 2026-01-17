@@ -22,12 +22,12 @@ public class ProjectService {
 
     ProjectRepository projectRepository;
     UserService userService;
-    UserRepository userRepository;
+//    UserRepository userRepository;
 
     public Project createProject(CreateProjectRequest createProjectRequest) {
 
         User user = userService.getUser(createProjectRequest.getOwnerId());
-        if(user.getName().contains("default")){
+        if(user.getUserName().contains("default")){
             userService.save(user);
         }
         Project project = Project.builder()
@@ -60,8 +60,8 @@ public class ProjectService {
                 saved.getDescription(),
                 saved.getStartDate(),
                 saved.getEndDate(),
-                saved.getCreatedBy() != null ? saved.getCreatedBy().getId() : null,
-                saved.getCreatedBy() != null ? saved.getCreatedBy().getName() : null
+                saved.getCreatedBy() != null ? saved.getCreatedBy().getUserId() : null,
+                saved.getCreatedBy() != null ? saved.getCreatedBy().getUserName() : null
         );
     }
 

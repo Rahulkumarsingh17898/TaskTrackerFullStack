@@ -20,17 +20,17 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("""
      select new rks.tiger.com.tasktracker.model.ProjectResponse(
        p.id, p.name, p.description, p.startDate, p.endDate,
-       p.createdBy.id, p.createdBy.name
+       p.createdBy.userId, p.createdBy.userName
      )
      from Project p
-     where p.createdBy.id = :ownerId
+     where p.createdBy.userId = :ownerId
   """)
     List<ProjectResponse> findAllByOwnerIdAsDto(@Param("ownerId") Long ownerId);
 
     @Query("""
      select new rks.tiger.com.tasktracker.model.ProjectResponse(
        p.id, p.name, p.description, p.startDate, p.endDate,
-       p.createdBy.id, p.createdBy.name
+       p.createdBy.userId, p.createdBy.userName
      )
      from Project p
   """)
@@ -41,5 +41,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     int deleteByIdReturningCount(@Param("id") Long id); // 0 or 1
 
 
-    List<Project> findByCreatedById(Long ownerId);
+//    List<Project> findByCreatedById(Long ownerId);
 }

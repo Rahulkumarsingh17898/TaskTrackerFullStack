@@ -14,7 +14,7 @@ import rks.tiger.com.tasktracker.service.ProjectService;
 import java.util.List;
 
 @RestController()
-@RequestMapping("/project")
+@RequestMapping("/api/project")
 @AllArgsConstructor
 public class ProjectController {
 

@@ -12,7 +12,7 @@ import rks.tiger.com.tasktracker.service.TaskService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/task")
+@RequestMapping("/api/task")
 @AllArgsConstructor
 public class TaskController {
 
@@ -33,11 +33,19 @@ public class TaskController {
             return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping()
-    public ResponseEntity<?> getTask(@RequestParam Long taskId) {
+    @GetMapping("/allTask")
+    public ResponseEntity<?> getTask() {
         List<Task> tasks = taskService.getAllTasks();
         return ResponseEntity.ok().body(tasks);
     }
+
+    @GetMapping()
+    public ResponseEntity<?> getTasksFromProjectId(@RequestParam Long projectId) {
+        List<TaskResponse> tasks = taskService.getTaskFromProjectId(projectId);
+        return ResponseEntity.ok().body(tasks);
+    }
+
+
 
 
 

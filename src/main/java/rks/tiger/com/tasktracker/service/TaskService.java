@@ -2,6 +2,7 @@ package rks.tiger.com.tasktracker.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rks.tiger.com.tasktracker.entity.Project;
 import rks.tiger.com.tasktracker.entity.Task;
 import rks.tiger.com.tasktracker.entity.User;
@@ -10,11 +11,14 @@ import rks.tiger.com.tasktracker.model.CreateTaskRequest;
 import rks.tiger.com.tasktracker.model.TaskResponse;
 import rks.tiger.com.tasktracker.repository.TaskRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+
 public class TaskService {
     TaskRepository taskRepository;
     ProjectService projectService;
@@ -35,9 +39,8 @@ public class TaskService {
                 saved.getName(),
                 saved.getDescription(),
                 saved.getDueDate(),
-                saved.getStatus().name(),
-                owner.getId(), owner.getName(),
-                project.getId(), project.getName()
+                saved.getStatus(),
+                project.getId()
         );
     }
 
@@ -59,5 +62,27 @@ public class TaskService {
         return updatedTask.getAssignedTo().equals(user);
 
 
+    }
+    @Transactional
+    public List<TaskResponse> getTaskFromProjectId(Long projectId) {
+        List<Task> tasks = taskRepository.findByProject_Id(projectId);
+        // This is where you map to the DTO
+        return tasks.stream()
+                .map(task -> {
+                    // Access the LAZY field to force initialization
+                    // This call only works if @Transactional is present!
+
+                    // Build and return the DTO
+                    return new TaskResponse(
+                            task.getId(),
+                            task.getName(),
+                            task.getDescription(),
+                            task.getDueDate(),
+                            task.getStatus(),
+
+                            task.getProject().getId()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }
