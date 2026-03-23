@@ -63,7 +63,7 @@ public class User{
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-    @JsonBackReference
+//    @JsonBackReference
     @ToString.Exclude
     private Role role;
 

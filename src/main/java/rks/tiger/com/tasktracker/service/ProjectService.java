@@ -11,6 +11,7 @@ import rks.tiger.com.tasktracker.model.CreateProjectRequest;
 import rks.tiger.com.tasktracker.model.ProjectResponse;
 import rks.tiger.com.tasktracker.model.UpdateProjectRequest;
 import rks.tiger.com.tasktracker.repository.ProjectRepository;
+import rks.tiger.com.tasktracker.repository.TaskRepository;
 import rks.tiger.com.tasktracker.repository.UserRepository;
 
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.NoSuchElementException;
 public class ProjectService {
 
     ProjectRepository projectRepository;
+
+    TaskRepository taskRepository;
     UserService userService;
 //    UserRepository userRepository;
 
@@ -76,6 +79,9 @@ public class ProjectService {
     }
     @Transactional
     public void deleteProjectById(Long projectId) {
+        // 2. Delete all tasks associated with this project FIRST
+        taskRepository.deleteAllTasksByProjectId(projectId);
+
         int affected = projectRepository.deleteByIdReturningCount(projectId);
         if(affected == 0){
             throw new NoSuchElementException();

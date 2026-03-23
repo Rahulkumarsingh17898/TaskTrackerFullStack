@@ -13,5 +13,6 @@ public class CreateTaskRequest {
     private Date startDate;
     private Date endDate;
     private  Long ownerId;
+    private Long assignedToId;
     private Long projectId;
 }

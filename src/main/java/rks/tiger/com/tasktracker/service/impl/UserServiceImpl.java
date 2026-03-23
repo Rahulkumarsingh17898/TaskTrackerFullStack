@@ -17,6 +17,7 @@ import rks.tiger.com.tasktracker.service.UserService;
 import rks.tiger.com.tasktracker.util.EmailService;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -58,14 +59,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserRole(Long userId, String roleName) {
+    public User updateUserRole(Long userId, String roleName) {
         User user = userRepository.findById(userId).orElseThrow(()
                 -> new RuntimeException("User not found"));
         AppRole appRole = AppRole.valueOf(roleName);
         Role role = roleRepository.findByRoleName(appRole)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         user.setRole(role);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
 
@@ -239,6 +240,35 @@ public class UserServiceImpl implements UserService {
 //        user.setTwoFactorEnabled(false);
 //        userRepository.save(user);
 //    }
+
+    @Override
+    public User createUserWithDefaults(String name, String email, String department) {
+        // 1. Create the user and set a default temporary password
+        User user = new User(name, email, passwordEncoder.encode("TempPassword123"));
+        user.setDepartment(department);
+
+        // 2. Set all mandatory default flags
+        user.setAccountNonLocked(true); // Set to true so they can actually log in!
+        user.setAccountNonExpired(true);
+        user.setCredentialsNonExpired(true);
+        user.setEnabled(true);
+
+        // 3. Set Dates
+        user.setCredentialsExpiryDate(LocalDate.now().plusYears(1));
+        user.setAccountExpiryDate(LocalDate.now().plusYears(1));
+
+        // 4. Set extra required fields
+        user.setTwoFactorEnabled(false);
+        user.setSignUpMethod("email");
+
+        // 5. Assign a default role (e.g., ROLE_USER)
+        Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        user.setRole(userRole);
+
+        // 6. Save and return!
+        return userRepository.save(user);
+    }
 
 
 }

@@ -9,5 +9,7 @@ public record TaskResponse(
         String description,
         java.util.Date dueDate,
         Status status,
-        Long projectId
+        Long projectId,
+        Long assignedToId,
+        String assignedToName
 ) {}

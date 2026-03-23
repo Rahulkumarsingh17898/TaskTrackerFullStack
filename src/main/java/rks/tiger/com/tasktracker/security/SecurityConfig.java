@@ -60,7 +60,7 @@ public class SecurityConfig {
        .csrf(AbstractHttpConfigurer::disable)// comment this line temp for fast evelopment
                 .authorizeHttpRequests((requests)
                 -> requests
-                        .requestMatchers("/**").permitAll() // comment this line temp for fast evelopment
+//                        .requestMatchers("/**").permitAll() // comment this line temp for fast evelopment
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/csrf-token").permitAll()
                 .requestMatchers("/api/auth/public/**").permitAll()
@@ -69,8 +69,10 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> {
                     oauth2.successHandler(oAuth2LoginSuccessHandler);
                 });
+
         http.exceptionHandling(exception
                 -> exception.authenticationEntryPoint(unauthorizedHandler));
+
         http.addFilterBefore(authenticationJwtTokenFilter(),
                 UsernamePasswordAuthenticationFilter.class);
         http.formLogin(withDefaults());

@@ -1,6 +1,7 @@
 package rks.tiger.com.tasktracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +30,8 @@ public class Role{
     private AppRole roleName;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    @JsonBackReference
+//    @JsonBackReference
+    @JsonIgnore
     @ToString.Exclude
     private Set<User> users = new HashSet<>();
 

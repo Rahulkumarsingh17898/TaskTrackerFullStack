@@ -26,12 +26,26 @@ public class TaskService {
     public List<Task> getAllTasks() {
       return taskRepository.findAll();
     }
-
     public TaskResponse createTask(CreateTaskRequest task) {
         Project project = projectService.getProjectById(task.getProjectId());
-        User owner = userService.getUser(task.getOwnerId());
-        Task taskToSave = Task.builder().name(task.getName()).description(task.getDescription()).dueDate(task.getEndDate())
-                .status(Status.NOT_STARTED).createdBy(owner).project(project).build();
+        User owner = userService.getUser(task.getOwnerId()); // Creator
+
+        // Fetch the assigned user if an ID was provided
+        User assignee = null;
+        if (task.getAssignedToId() != null) {
+            assignee = userService.getUser(task.getAssignedToId());
+        }
+
+        Task taskToSave = Task.builder()
+                .name(task.getName())
+                .description(task.getDescription())
+                .dueDate(task.getEndDate())
+                .status(Status.NOT_STARTED)
+                .createdBy(owner)
+                .assignedTo(assignee) // <-- Set the assignee here!
+                .project(project)
+                .build();
+
         Task saved = taskRepository.save(taskToSave);
 
         return new TaskResponse(
@@ -40,7 +54,9 @@ public class TaskService {
                 saved.getDescription(),
                 saved.getDueDate(),
                 saved.getStatus(),
-                project.getId()
+                project.getId(),
+                assignee != null ? assignee.getUserId() : null,
+                assignee != null ? assignee.getUserName() : "Unassigned"
         );
     }
 
@@ -79,10 +95,28 @@ public class TaskService {
                             task.getDescription(),
                             task.getDueDate(),
                             task.getStatus(),
-
-                            task.getProject().getId()
+                            task.getProject().getId(),
+                            task.getAssignedTo().getUserId(),
+                            task.getAssignedTo().getUserName()
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateTaskStatus(Long taskId, Status status) {
+        // 1. Fetch the existing task using the method you already wrote
+        Task task = getTaskById(taskId);
+
+        // 2. Update the status
+        task.setStatus(status);
+
+        // 3. Save it back to the database
+        taskRepository.save(task);
+    }
+
+    public void deleteTask(Long taskId) {
+        // Assuming you have taskRepository injected
+        taskRepository.deleteById(taskId);
     }
 }

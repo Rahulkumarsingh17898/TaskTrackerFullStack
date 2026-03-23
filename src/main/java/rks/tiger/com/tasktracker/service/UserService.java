@@ -48,7 +48,7 @@ public interface UserService {
 
     User getUser(long id);
 
-    void updateUserRole(Long userId, String roleName);
+    User updateUserRole(Long userId, String roleName);
 
     List<User> getAllUsers();
 
@@ -76,6 +76,7 @@ public interface UserService {
 
     User registerUser(User user);
 
+    public User createUserWithDefaults(String name, String email, String department);
 //    GoogleAuthenticatorKey generate2FASecret(Long userId);
 
 //    boolean validate2FACode(Long userId, int code);
